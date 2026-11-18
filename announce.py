@@ -275,7 +275,10 @@ def instagram(post, dry):
     if dry:
         print(f"  [instagram] image {post['image']}\n{indent(text)}")
         return "dry-run"
-    base = f"https://graph.instagram.com/{env('META_GRAPH_VERSION', 'v23.0')}"
+    # Instagram-login ("Unified login") tokens start IG... and use graph.instagram.com; a Facebook-login token
+    # (EAA..., the Page's) works on graph.facebook.com with the Instagram account linked to that Page.
+    host = "graph.facebook.com" if token.startswith("EAA") else "graph.instagram.com"
+    base = f"https://{host}/{env('META_GRAPH_VERSION', 'v23.0')}"
     pid = _meta_publish(base, user, token, {"image_url": post["image"], "caption": text}, "instagram")
     return f"instagram media {pid}"
 
@@ -463,7 +466,7 @@ def cmd_refresh(outfile):
     for name, url, grant in (("THREADS_TOKEN", "https://graph.threads.net/refresh_access_token", "th_refresh_token"),
                              ("INSTAGRAM_TOKEN", "https://graph.instagram.com/refresh_access_token", "ig_refresh_token")):
         tok = env(name)
-        if not tok:
+        if not tok or tok.startswith("EAA"):     # a Facebook-login token is not refreshed this way (a Page's never expires)
             continue
         try:
             r = http("GET", f"{url}?grant_type={grant}&access_token={urllib.parse.quote(tok)}")

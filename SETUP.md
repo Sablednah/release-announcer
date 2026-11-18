@@ -51,10 +51,13 @@ can stay in development mode: it only ever posts to your own accounts, which hav
 Instagram must be a **professional** account (Business or Creator: Instagram settings → Account type and tools).
 Every Instagram post needs a picture: each project in `projects.json` has an `image`.
 
-1. Use case: **Manage messaging and content on Instagram** → *API setup with Instagram login*.
+1. Use case: **Instagram API** → **Customize**. Under *Permissions and features*, add `instagram_business_basic` and
+   `instagram_business_content_publish`. Then open **API setup with Unified login** (Meta's newer name for Instagram
+   login) in the left-hand menu.
 2. Add your Instagram account and **Generate token** (it lasts 60 days; the Refresh tokens workflow renews it each
    month). The account's numeric ID is shown beside it.
-3. Secret `INSTAGRAM_TOKEN`; variable `INSTAGRAM_USER_ID`.
+3. Secret `INSTAGRAM_TOKEN`; variable `INSTAGRAM_USER_ID`. A Unified-login token starts `IGAA`. (A Facebook-login
+   token, starting `EAA`, works too, if the Instagram account is linked to the Facebook Page.)
 
 ### Threads
 
