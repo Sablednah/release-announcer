@@ -446,6 +446,9 @@ def cmd_post(repo, tag, dry, only, text):
     rec = st["releases"].get(rk, {})
     rec.pop("seeded", None)
     rec.pop("skip", None)
+    # by hand means "try again": a network skipped for want of keys, failed or given up on gets another go
+    for k in [k for k, v in rec.items() if isinstance(v, dict) or (isinstance(v, str) and v.startswith(("skipped", "gave up")))]:
+        del rec[k]
     announce(post, rec, dry, only)
     if not dry:
         st["releases"][rk] = rec
