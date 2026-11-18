@@ -537,10 +537,12 @@ def cmd_verify():
             return "(not set up)"
         user = env("INSTAGRAM_USER_ID", "me")
         host = "graph.facebook.com" if tok.startswith("EAA") else "graph.instagram.com"
-        r = http("GET", f"https://{host}/{ver}/{user}?fields=username&access_token={tok}")
-        if "username" not in r:
-            raise HttpError(f"{user} is not an Instagram account id (is it the Facebook Page's id?): {r}")
-        return f"@{r['username']} (id {user})"
+        # media_count exists only on an Instagram account: a Facebook Page id (which also has a username) fails here
+        try:
+            r = http("GET", f"https://{host}/{ver}/{user}?fields=username,media_count&access_token={tok}")
+        except HttpError as e:
+            raise HttpError(f"{user} is not an Instagram account id (the Facebook Page's id?): {e}") from None
+        return f"@{r['username']} (id {user}, {r.get('media_count')} posts)"
 
     def th():
         tok = env("THREADS_TOKEN")
