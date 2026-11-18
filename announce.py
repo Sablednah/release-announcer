@@ -8,6 +8,7 @@ credentials. Standard library only, so it runs on any GitHub runner with no inst
     announce.py check [--dry-run]                       announce every new release (the scheduled run)
     announce.py post REPO TAG [--dry-run] [--only bluesky,mastodon] [--text "..."]   announce one release now
     announce.py seed                                     mark every existing release as announced
+    announce.py verify                                   log in to every network and report; posts nothing
     announce.py refresh OUTFILE                          refresh the 60-day Threads/Instagram tokens into OUTFILE
 
 Networks: Bluesky, Mastodon, Tumblr, Facebook Page, Instagram, Threads. (X charges per post, so it is left out.) A network without credentials is
@@ -481,6 +482,82 @@ def cmd_refresh(outfile):
         sys.exit(1)
 
 
+def cmd_verify():
+    """Log in to every network with the configured keys and say what each one answered. Posts nothing."""
+    ver = env("META_GRAPH_VERSION", "v23.0")
+    bad = 0
+
+    def check(name, fn):
+        nonlocal bad
+        try:
+            print(f"  {name:10} OK   {fn()}")
+        except Exception as e:
+            bad += 1
+            print(f"  {name:10} FAIL {e}")
+
+    def bs():
+        h, pw = env("BLUESKY_HANDLE"), env("BLUESKY_APP_PASSWORD")
+        if not (h and pw):
+            return "(not set up)"
+        s = http("POST", f"{env('BLUESKY_SERVICE', 'https://bsky.social')}/xrpc/com.atproto.server.createSession",
+                 json_body={"identifier": h, "password": pw})
+        return f"logged in as {s['handle']}"
+
+    def ma():
+        inst, tok = env("MASTODON_INSTANCE").rstrip("/"), env("MASTODON_TOKEN")
+        if not (inst and tok):
+            return "(not set up)"
+        inst = inst if inst.startswith("http") else "https://" + inst
+        a = http("GET", f"{inst}/api/v1/accounts/verify_credentials", headers={"Authorization": f"Bearer {tok}"})
+        return f"@{a['acct']} on {inst}"
+
+    def tu():
+        keys = [env(k) for k in ("TUMBLR_CONSUMER_KEY", "TUMBLR_CONSUMER_SECRET", "TUMBLR_TOKEN", "TUMBLR_TOKEN_SECRET")]
+        if not all(keys):
+            return "(not set up)"
+        url = "https://api.tumblr.com/v2/user/info"
+        r = http("GET", url, headers={"Authorization": oauth1_header("GET", url, *keys)})
+        u = r["response"]["user"]
+        blogs = [b["name"] for b in u.get("blogs", [])]
+        want = env("TUMBLR_BLOG").replace("https://", "").replace("http://", "").strip("/").split(".")[0]
+        note = "" if want in blogs else f"  !! TUMBLR_BLOG '{env('TUMBLR_BLOG')}' is not one of your blogs"
+        return f"user {u['name']}, blogs {', '.join(blogs)}{note}"
+
+    def fb():
+        page, tok = env("FACEBOOK_PAGE_ID"), env("FACEBOOK_PAGE_TOKEN")
+        if not (page and tok):
+            return "(not set up)"
+        r = http("GET", f"https://graph.facebook.com/{ver}/{page}?fields=name,instagram_business_account&access_token={tok}")
+        ig = (r.get("instagram_business_account") or {}).get("id")
+        return f"page '{r['name']}', linked Instagram account id: {ig or 'none linked'}"
+
+    def ig():
+        tok = env("INSTAGRAM_TOKEN")
+        if not tok:
+            return "(not set up)"
+        user = env("INSTAGRAM_USER_ID", "me")
+        host = "graph.facebook.com" if tok.startswith("EAA") else "graph.instagram.com"
+        r = http("GET", f"https://{host}/{ver}/{user}?fields=username&access_token={tok}")
+        if "username" not in r:
+            raise HttpError(f"{user} is not an Instagram account id (is it the Facebook Page's id?): {r}")
+        return f"@{r['username']} (id {user})"
+
+    def th():
+        tok = env("THREADS_TOKEN")
+        if not tok:
+            return "(not set up)"
+        r = http("GET", f"https://graph.threads.net/v1.0/me?fields=id,username&access_token={tok}")
+        return f"@{r['username']}"
+
+    print("Checking credentials (nothing is posted):")
+    for name, fn in (("bluesky", bs), ("mastodon", ma), ("tumblr", tu), ("facebook", fb), ("instagram", ig),
+                     ("threads", th)):
+        check(name, fn)
+    print("SECRETS_PAT (for the monthly token refresh):", "set" if env("SECRETS_PAT") else "NOT SET")
+    if bad:
+        sys.exit(1)
+
+
 def main(argv):
     args = argv[1:]
     dry = "--dry-run" in args
@@ -504,6 +581,8 @@ def main(argv):
         cmd_check(False, seed_only=True)
     elif args[0] == "post" and len(args) == 3:
         cmd_post(args[1], args[2], dry, only, text)
+    elif args[0] == "verify":
+        cmd_verify()
     elif args[0] == "refresh" and len(args) == 2:
         cmd_refresh(args[1])
     else:

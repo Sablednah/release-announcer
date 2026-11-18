@@ -26,6 +26,10 @@ on:
       text:
         description: 'Custom post text (replaces the headline)'
         required: false
+      verify:
+        description: 'Only check the keys: log in to every network and report (posts nothing)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write     # state/announced.json
@@ -68,7 +72,10 @@ jobs:
           TAG_IN: ${{ inputs.tag }}
           ONLY: ${{ inputs.only }}
           TEXT: ${{ inputs.text }}
+          VERIFY: ${{ inputs.verify }}
+          SECRETS_PAT: ${{ secrets.SECRETS_PAT != '' && 'set' || '' }}
         run: |
+          if [ "$VERIFY" = true ]; then python3 -I announce.py verify; exit; fi
           args=()
           if [ "$EVENT" = schedule ]; then
             [ "$LIVE" = true ] || { echo "ANNOUNCE_LIVE is not true: dry run"; args+=(--dry-run); }
