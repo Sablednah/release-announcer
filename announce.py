@@ -6,11 +6,11 @@ those repos' releases, and every release not yet in state/announced.json is post
 credentials. Standard library only, so it runs on any GitHub runner with no install step.
 
     announce.py check [--dry-run]                       announce every new release (the scheduled run)
-    announce.py post REPO TAG [--dry-run] [--only x,bluesky] [--text "..."]   announce one release now
+    announce.py post REPO TAG [--dry-run] [--only bluesky,mastodon] [--text "..."]   announce one release now
     announce.py seed                                     mark every existing release as announced
     announce.py refresh OUTFILE                          refresh the 60-day Threads/Instagram tokens into OUTFILE
 
-Networks: Bluesky, Mastodon, X, Tumblr, Facebook Page, Instagram, Threads. A network without credentials is
+Networks: Bluesky, Mastodon, Tumblr, Facebook Page, Instagram, Threads. (X charges per post, so it is left out.) A network without credentials is
 skipped. Ko-fi has no posting API: the workflow opens an issue with a ready-to-paste post instead.
 
 A release body can steer its own announcement with an HTML comment (invisible on GitHub):
@@ -25,7 +25,7 @@ STATE = os.path.join(HERE, "state", "announced.json")
 PROJECTS = os.path.join(HERE, "projects.json")
 UA = "release-announcer/1.0"
 MAX_ATTEMPTS = 3          # a network that fails this many runs in a row is given up on (and reported)
-NETWORKS = ["bluesky", "mastodon", "x", "tumblr", "facebook", "instagram", "threads"]
+NETWORKS = ["bluesky", "mastodon", "tumblr", "facebook", "instagram", "threads"]
 
 
 def env(name, default=""):
@@ -61,7 +61,7 @@ def http(method, url, *, headers=None, data=None, json_body=None, form=None, raw
     return json.loads(out) if out else {}
 
 
-# ---------------------------------------------------------------- OAuth 1.0a (X and Tumblr)
+# ---------------------------------------------------------------- OAuth 1.0a (Tumblr)
 
 def _pct(s):
     return urllib.parse.quote(str(s), safe="~-._")
@@ -92,7 +92,7 @@ URL_RE = re.compile(r"https?://\S+")
 
 
 def x_length(text):
-    """X and Mastodon count every link as 23 characters."""
+    """Mastodon counts every link as 23 characters."""
     return len(URL_RE.sub("x" * 23, text))
 
 
@@ -128,7 +128,7 @@ def post_for(rule, release):
         return None
     version = re.sub(rule.get("tags", "^"), "", tag, count=1) if rule.get("tags") else tag
     name = rule.get("name", "")
-    if name and name.lower() not in title.lower():      # "2.13.0 — Heal heals you" -> "LegendQuest 2.13.0 — ..."
+    if name and re.match(r"v?\d", title):              # "2.13.0 — Heal heals you" -> "LegendQuest ReForged 2.13.0 — ..."
         title = f"{name} {title}"
     headline = override or rule.get("template", "New release: {title}").format(
         title=title, name=name, version=version, tag=tag)
@@ -203,22 +203,6 @@ def mastodon(post, dry):
     r = http("POST", f"{instance}/api/v1/statuses", form={"status": text, "visibility": "public", "language": "en"},
              headers={"Authorization": f"Bearer {token}", "Idempotency-Key": key})
     return r.get("url") or True
-
-
-def x(post, dry):
-    keys = [env(k) for k in ("X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET")]
-    if not all(keys):
-        if not dry:
-            return None
-        print("  (no credentials yet: preview only)")
-    text = compose(post, 280, x_length)
-    if dry:
-        print(f"  [x] {x_length(text)} chars\n{indent(text)}")
-        return "dry-run"
-    url = "https://api.x.com/2/tweets"
-    auth = oauth1_header("POST", url, keys[0], keys[1], keys[2], keys[3])
-    r = http("POST", url, json_body={"text": text}, headers={"Authorization": auth})
-    return f"https://x.com/i/status/{r['data']['id']}"
 
 
 def tumblr(post, dry):
@@ -311,7 +295,7 @@ def threads(post, dry):
     return f"threads post {pid}"
 
 
-POSTERS = {"bluesky": bluesky, "mastodon": mastodon, "x": x, "tumblr": tumblr, "facebook": facebook,
+POSTERS = {"bluesky": bluesky, "mastodon": mastodon, "tumblr": tumblr, "facebook": facebook,
            "instagram": instagram, "threads": threads}
 
 

@@ -1,5 +1,83 @@
 {
  "releases": {
+  "Sablednah/Cast@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/Cast@v1.1.0": {
+   "seeded": true
+  },
+  "Sablednah/Cast@v1.1.1": {
+   "seeded": true
+  },
+  "Sablednah/Cast@v1.2.0": {
+   "seeded": true
+  },
+  "Sablednah/Cast@v1.2.1": {
+   "seeded": true
+  },
+  "Sablednah/Cast@v1.2.2": {
+   "seeded": true
+  },
+  "Sablednah/Cast@v1.2.3": {
+   "seeded": true
+  },
+  "Sablednah/Cast@v1.2.4": {
+   "seeded": true
+  },
+  "Sablednah/ChatFilter-ReForged@v3.0.0": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.0.1": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.1.0": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.2.0": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.2.1": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.0": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.1": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.2": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.3": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.4": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.5": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.6": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.7": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.8": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.3.9": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.4.0": {
+   "seeded": true
+  },
+  "Sablednah/Chronicler@v1.5.0": {
+   "seeded": true
+  },
   "Sablednah/CityWorld-Compass@v1.0.0": {
    "seeded": true
   },
@@ -95,6 +173,324 @@
   },
   "Sablednah/CityWorld-Zoo@v1.0.0": {
    "seeded": true
+  },
+  "Sablednah/CrawlSpace@v0.1.0": {
+   "seeded": true
+  },
+  "Sablednah/CrawlSpace@v0.2.0": {
+   "seeded": true
+  },
+  "Sablednah/CrawlSpace@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/CrawlSpace@v1.1.0": {
+   "seeded": true
+  },
+  "Sablednah/CrawlSpace@v1.2.0": {
+   "seeded": true
+  },
+  "Sablednah/CrawlSpace@v1.2.1": {
+   "seeded": true
+  },
+  "Sablednah/Diorama@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/Diorama@v1.0.1": {
+   "seeded": true
+  },
+  "Sablednah/Diorama@v1.0.2": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.1.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.1.1": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.10.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.11.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.12.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.13.1": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.2.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.3.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.4.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.6.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.7.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.8.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.9.0": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.9.1": {
+   "seeded": true
+  },
+  "Sablednah/Factions-ReForged@v1.9.2": {
+   "seeded": true
+  },
+  "Sablednah/Guppy@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.0.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.0.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.1.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.10.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.11.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.11.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.12.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.13.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.2.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.2.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.3.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.3.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.4.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.4.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.5.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.5.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.6.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.6.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.7.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.7.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.8.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.8.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.9.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-ReForged@v2.9.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-StoryTeller@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-StoryTeller@v1.1.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-StoryTeller@v1.2.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-StoryTeller@v1.3.0": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-StoryTeller@v1.3.1": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-StoryTeller@v1.3.2": {
+   "seeded": true
+  },
+  "Sablednah/LegendQuest-StoryTeller@v1.4.0": {
+   "seeded": true
+  },
+  "Sablednah/MobHealth-NeoForge@v2.4.1": {
+   "seeded": true
+  },
+  "Sablednah/MobHealth-NeoForge@v2.5.0": {
+   "seeded": true
+  },
+  "Sablednah/MobHealth-NeoForge@v2.5.1": {
+   "seeded": true
+  },
+  "Sablednah/MobHealth-NeoForge@v2.5.2": {
+   "seeded": true
+  },
+  "Sablednah/MobHealth-NeoForge@v2.5.3": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.0.1": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.1.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.1.1": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.10.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.10.1": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.10.2": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.11.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.11.1": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.11.2": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.12.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.13.1": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.13.2": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.2.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.3.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.4.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.5.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.6.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.8.0": {
+   "seeded": true
+  },
+  "Sablednah/SableCraft-Standards@v1.9.0": {
+   "seeded": true
+  },
+  "Sablednah/WadCraft@v0.1.0": {
+   "seeded": true
+  },
+  "Sablednah/WadCraft@v0.1.1": {
+   "seeded": true
+  },
+  "Sablednah/WoodDye-NeoForge@v2.0.0": {
+   "seeded": true
+  },
+  "Sablednah/WoodDye-NeoForge@v3.0.0": {
+   "seeded": true
+  },
+  "Sablednah/WoodDye-NeoForge@v3.0.1": {
+   "seeded": true
+  },
+  "Sablednah/WoodDye-NeoForge@v3.0.2": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.0.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.1.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.1.1": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.10.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.10.1": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.2.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.3.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.4.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.4.1": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.5.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.5.1": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.6.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.6.1": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.6.2": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.6.3": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.6.4": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.7.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.8.0": {
+   "seeded": true
+  },
+  "Sablednah/ZombieMod@v3.9.0": {
+   "seeded": true
   }
  },
  "seeded": [
@@ -103,6 +499,20 @@
   "Sablednah/CityWorld-ReForged ^neutral-palette-",
   "Sablednah/CityWorld-ReForged ^all-vanilla-structures-",
   "Sablednah/CityWorld-Compass ^v(?=\\d)",
-  "Sablednah/CityWorld-Zoo ^v(?=\\d)"
+  "Sablednah/CityWorld-Zoo ^v(?=\\d)",
+  "Sablednah/ZombieMod ^v(?=\\d)",
+  "Sablednah/LegendQuest-ReForged ^v(?=\\d)",
+  "Sablednah/LegendQuest-StoryTeller ^v(?=\\d)",
+  "Sablednah/CrawlSpace ^v(?=\\d)",
+  "Sablednah/WadCraft ^v(?=\\d)",
+  "Sablednah/SableCraft-Standards ^v(?=\\d)",
+  "Sablednah/Chronicler ^v(?=\\d)",
+  "Sablednah/Cast ^v(?=\\d)",
+  "Sablednah/Diorama ^v(?=\\d)",
+  "Sablednah/Factions-ReForged ^v(?=\\d)",
+  "Sablednah/MobHealth-NeoForge ^v(?=\\d)",
+  "Sablednah/WoodDye-NeoForge ^v(?=\\d)",
+  "Sablednah/ChatFilter-ReForged ^v(?=\\d)",
+  "Sablednah/Guppy ^v(?=\\d)"
  ]
 }

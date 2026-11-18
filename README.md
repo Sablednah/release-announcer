@@ -1,6 +1,6 @@
 # Release Announcer
 
-Posts every new GitHub release of the projects in `projects.json` to Bluesky, Mastodon, X, Tumblr, a Facebook Page,
+Posts every new GitHub release of the projects in `projects.json` to Bluesky, Mastodon, Tumblr, a Facebook Page,
 Instagram and Threads, and opens a ready-to-paste issue for Ko-fi. All the keys live here, once; the projects
 themselves need nothing.
 

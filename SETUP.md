@@ -22,17 +22,6 @@ permission to post, and a token for your own account.
 2. Open the application and copy **Your access token**.
 3. Variable `MASTODON_INSTANCE` (your server, for example `mastodon.social`); secret `MASTODON_TOKEN`.
 
-## X
-
-X charges for API posts now (pay-per-use since February 2026, reportedly about $0.20 for a post with a link), so it
-needs a few dollars of credit on the developer account.
-
-1. developer.x.com → the developer portal → create a Project and an App.
-2. In the app's **User authentication settings**, set app permissions to **Read and write**. Do this *before* the next
-   step: an access token made earlier stays read-only.
-3. **Keys and tokens**: copy the API Key and Secret, then generate the Access Token and Secret.
-4. Secrets: `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET`.
-
 ## Tumblr
 
 1. https://www.tumblr.com/oauth/apps → Register application. Any website and callback URL will do (for example
