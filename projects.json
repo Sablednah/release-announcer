@@ -1,0 +1,16 @@
+[
+ {"repo": "Sablednah/CityWorld-ReForged", "tags": "^v(?=\\d)", "name": "CityWorld",
+  "link": "https://www.curseforge.com/minecraft/mc-mods/cityworld-reforged",
+  "hashtags": ["Minecraft", "MinecraftMods"], "image": "https://raw.githubusercontent.com/Sablednah/CityWorld-ReForged/master/screengrabs/cityworld-skyline-at-dusk-across-the-bay.jpg"},
+ {"repo": "Sablednah/CityWorld-ReForged", "tags": "^lootlinker-", "name": "CityWorld: LootLinker",
+  "hashtags": ["Minecraft", "MinecraftMods"], "image": "https://raw.githubusercontent.com/Sablednah/CityWorld-ReForged/master/screengrabs/cityworld-skyline-at-dusk-across-the-bay.jpg"},
+ {"repo": "Sablednah/CityWorld-ReForged", "tags": "^neutral-palette-", "name": "CityWorld: Neutral Palette",
+  "hashtags": ["Minecraft", "MinecraftMods"], "image": "https://raw.githubusercontent.com/Sablednah/CityWorld-ReForged/master/screengrabs/cityworld-skyline-at-dusk-across-the-bay.jpg"},
+ {"repo": "Sablednah/CityWorld-ReForged", "tags": "^all-vanilla-structures-", "name": "CityWorld: All Vanilla Structures",
+  "hashtags": ["Minecraft", "MinecraftMods"], "image": "https://raw.githubusercontent.com/Sablednah/CityWorld-ReForged/master/screengrabs/cityworld-skyline-at-dusk-across-the-bay.jpg"},
+ {"repo": "Sablednah/CityWorld-Compass", "tags": "^v(?=\\d)", "name": "CityWorld Compass",
+  "link": "https://www.curseforge.com/minecraft/mc-mods/cityworld-urban-compass",
+  "hashtags": ["Minecraft", "MinecraftMods"], "image": "https://raw.githubusercontent.com/Sablednah/CityWorld-ReForged/master/screengrabs/cityworld-skyline-at-dusk-across-the-bay.jpg"},
+ {"repo": "Sablednah/CityWorld-Zoo", "tags": "^v(?=\\d)", "name": "CityWorld: Zoo",
+  "hashtags": ["Minecraft", "MinecraftMods"], "image": "https://raw.githubusercontent.com/Sablednah/CityWorld-ReForged/master/screengrabs/cityworld-skyline-at-dusk-across-the-bay.jpg"}
+]

@@ -1,0 +1,58 @@
+name: Refresh tokens
+
+# Threads and Instagram tokens last 60 days; refreshing one gives a fresh 60. This runs on the 1st of every month and
+# saves the new tokens back into this repo's secrets (needs the SECRETS_PAT secret: a fine-grained token for THIS
+# repo with "Secrets: Read and write"). It also writes state/heartbeat.txt, because GitHub switches off scheduled
+# workflows in a repo with no commits for 60 days.
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refresh the Threads and Instagram tokens
+        env:
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+          INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+          GH_TOKEN: ${{ secrets.SECRETS_PAT }}
+        run: |
+          out="$RUNNER_TEMP/tokens.json"
+          python3 -I announce.py refresh "$out"
+          for name in $(jq -r 'keys[]' "$out"); do
+            value=$(jq -r --arg n "$name" '.[$n]' "$out")
+            echo "::add-mask::$value"
+            if [ -n "$GH_TOKEN" ]; then
+              printf '%s' "$value" | gh secret set "$name" --repo "$GITHUB_REPOSITORY"
+              echo "$name saved"
+            else
+              echo "::warning::SECRETS_PAT is not set: $name was refreshed but could not be saved, and will expire."
+            fi
+          done
+          rm -f "$out"
+
+      - name: Heartbeat
+        if: always()
+        run: |
+          date -u +%Y-%m-%d > state/heartbeat.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/heartbeat.txt
+          git diff --cached --quiet || { git commit -q -m "Heartbeat"; git push -q; }
+
+      - name: Report a failed refresh
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Token refresh failed $(date -u +%Y-%m-%d)" \
+            --body "A Threads or Instagram token could not be refreshed: see ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. Make a new token (SETUP.md) and set the secret again before the old one runs out."

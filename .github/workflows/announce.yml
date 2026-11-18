@@ -1,0 +1,109 @@
+name: Announce releases
+
+# Every half hour: read the releases of every project in projects.json and post each new one to every network that
+# has credentials. Until the repository variable ANNOUNCE_LIVE is "true", scheduled runs are dry runs (they print the
+# posts and change nothing). Run it by hand (Actions -> Announce releases -> Run workflow) to announce one release
+# now, or to preview one.
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+    inputs:
+      repo:
+        description: 'One release only: owner/repo (empty = check every project)'
+        required: false
+      tag:
+        description: 'One release only: its tag (e.g. v7.2.0)'
+        required: false
+      dry_run:
+        description: 'Only print the posts'
+        type: boolean
+        default: true
+      only:
+        description: 'Only these networks, comma-separated (bluesky,mastodon,x,tumblr,facebook,instagram,threads)'
+        required: false
+      text:
+        description: 'Custom post text (replaces the headline)'
+        required: false
+
+permissions:
+  contents: write     # state/announced.json
+  issues: write       # the Ko-fi paste issue
+
+concurrency:
+  group: announce
+  cancel-in-progress: false
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Announce
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RELEASES_TOKEN: ${{ secrets.RELEASES_TOKEN }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          MASTODON_INSTANCE: ${{ vars.MASTODON_INSTANCE }}
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          TUMBLR_BLOG: ${{ vars.TUMBLR_BLOG }}
+          TUMBLR_CONSUMER_KEY: ${{ secrets.TUMBLR_CONSUMER_KEY }}
+          TUMBLR_CONSUMER_SECRET: ${{ secrets.TUMBLR_CONSUMER_SECRET }}
+          TUMBLR_TOKEN: ${{ secrets.TUMBLR_TOKEN }}
+          TUMBLR_TOKEN_SECRET: ${{ secrets.TUMBLR_TOKEN_SECRET }}
+          FACEBOOK_PAGE_ID: ${{ vars.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+          INSTAGRAM_USER_ID: ${{ vars.INSTAGRAM_USER_ID }}
+          INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+          THREADS_USER_ID: ${{ vars.THREADS_USER_ID }}
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+          META_GRAPH_VERSION: ${{ vars.META_GRAPH_VERSION }}
+          LIVE: ${{ vars.ANNOUNCE_LIVE }}
+          EVENT: ${{ github.event_name }}
+          DRY: ${{ inputs.dry_run }}
+          REPO_IN: ${{ inputs.repo }}
+          TAG_IN: ${{ inputs.tag }}
+          ONLY: ${{ inputs.only }}
+          TEXT: ${{ inputs.text }}
+        run: |
+          args=()
+          if [ "$EVENT" = schedule ]; then
+            [ "$LIVE" = true ] || { echo "ANNOUNCE_LIVE is not true: dry run"; args+=(--dry-run); }
+          elif [ "$DRY" = true ]; then
+            args+=(--dry-run)
+          fi
+          [ -n "$ONLY" ] && args+=(--only "$ONLY")
+          [ -n "$TEXT" ] && args+=(--text "$TEXT")
+          if [ -n "$REPO_IN" ]; then
+            [ -n "$TAG_IN" ] || { echo "::error::Give a tag with the repo"; exit 1; }
+            python3 -I announce.py post "$REPO_IN" "$TAG_IN" "${args[@]}"
+          else
+            python3 -I announce.py check "${args[@]}"
+          fi
+
+      - name: Open the Ko-fi issue
+        if: hashFiles('kofi-issues.json') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(jq length kofi-issues.json)
+          for i in $(seq 0 $((n - 1))); do
+            jq -r ".[$i].body" kofi-issues.json > "$RUNNER_TEMP/body.md"
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$(jq -r ".[$i].title" kofi-issues.json)" \
+              --body-file "$RUNNER_TEMP/body.md"
+          done
+          rm kofi-issues.json
+
+      - name: Save what was announced
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state
+          git diff --cached --quiet || { git commit -q -m "Announced releases"; git push -q; }

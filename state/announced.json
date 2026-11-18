@@ -1,0 +1,108 @@
+{
+ "releases": {
+  "Sablednah/CityWorld-Compass@v1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@all-vanilla-structures-1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@lootlinker-1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@neutral-palette-1.0.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v5.17.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v5.18.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v5.19.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v5.19.1": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.0.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.1.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.1.1": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.10.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.11.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.12.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.13.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.13.1": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.14.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.2.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.3.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.4.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.4.1": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.5.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.6.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.7.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.8.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.8.1": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.8.2": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v6.9.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v7.0.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v7.1.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-ReForged@v7.2.0": {
+   "seeded": true
+  },
+  "Sablednah/CityWorld-Zoo@v1.0.0": {
+   "seeded": true
+  }
+ },
+ "seeded": [
+  "Sablednah/CityWorld-ReForged ^v(?=\\d)",
+  "Sablednah/CityWorld-ReForged ^lootlinker-",
+  "Sablednah/CityWorld-ReForged ^neutral-palette-",
+  "Sablednah/CityWorld-ReForged ^all-vanilla-structures-",
+  "Sablednah/CityWorld-Compass ^v(?=\\d)",
+  "Sablednah/CityWorld-Zoo ^v(?=\\d)"
+ ]
+}
