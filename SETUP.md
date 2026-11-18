@@ -64,10 +64,9 @@ Every Instagram post needs a picture: each project in `projects.json` has an `im
 1. Use case: **Access the Threads API**, with `threads_basic` and `threads_content_publish`.
 2. App roles → add your Threads account as a **Threads Tester**, then accept the invite in the Threads app (Settings →
    Account → Website permissions → Invites).
-3. Use case settings → **User Token Generator** → generate a token for your account.
-   If it is a short-lived one (an hour), swap it for a 60-day one by opening this in a browser:
-   `https://graph.threads.net/access_token?grant_type=th_exchange_token&client_secret=<APP SECRET>&access_token=<TOKEN>`
-   (the app secret is under Threads use case settings).
+3. Use case settings → **User Token Generator** → generate a token for your account (it starts `TH`). That is
+   already a 60-day token: no exchange needed (exchanging one fails with "Session key invalid"). Check it by opening
+   `https://graph.threads.net/v1.0/me?fields=id,username&access_token=<TOKEN>`: it should answer your username.
 4. Secret `THREADS_TOKEN`. (`THREADS_USER_ID` is optional; it defaults to your own account.)
 
 ## Keeping the 60-day tokens alive
