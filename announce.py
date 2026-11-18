@@ -448,6 +448,7 @@ def cmd_post(repo, tag, dry, only, text):
     st = load_state()
     rk = f"{repo}@{tag}"
     rec = st["releases"].get(rk, {})
+    announced_before = any(isinstance(v, str) and v.startswith("http") for v in rec.values())
     rec.pop("seeded", None)
     rec.pop("skip", None)
     # by hand means "try again": a network skipped for want of keys, failed or given up on gets another go
@@ -457,8 +458,9 @@ def cmd_post(repo, tag, dry, only, text):
     if not dry:
         st["releases"][rk] = rec
         save_state(st)
-        with open(os.path.join(HERE, "kofi-issues.json"), "w") as f:
-            json.dump([kofi_issue(post, rec)], f)
+        if not announced_before:                    # a retry of one network does not need another Ko-fi issue
+            with open(os.path.join(HERE, "kofi-issues.json"), "w") as f:
+                json.dump([kofi_issue(post, rec)], f)
 
 
 def cmd_refresh(outfile):
@@ -529,7 +531,20 @@ def cmd_verify():
             return "(not set up)"
         r = http("GET", f"https://graph.facebook.com/{ver}/{page}?fields=name,instagram_business_account&access_token={tok}")
         ig = (r.get("instagram_business_account") or {}).get("id")
-        return f"page '{r['name']}', linked Instagram account id: {ig or 'none linked'}"
+        d = http("GET", f"https://graph.facebook.com/{ver}/debug_token?input_token={tok}&access_token={tok}").get("data", {})
+        scopes = set(d.get("scopes", []))
+        need = {"pages_manage_posts", "pages_read_engagement"}
+        exp = d.get("expires_at", 0)
+        lines = [f"page '{r['name']}', linked Instagram account id: {ig or 'none linked'}",
+                 f"token: {d.get('type', '?')} token, {'valid' if d.get('is_valid') else 'NOT VALID'}, "
+                 f"expires {'never' if not exp else datetime.fromtimestamp(exp, timezone.utc).date()}, "
+                 f"profile {d.get('profile_id') or d.get('user_id')}",
+                 f"scopes: {', '.join(sorted(scopes)) or '(none)'}"]
+        if d.get("type") != "PAGE":
+            lines.append("!! this is not a Page token: take the Page's access_token from me/accounts")
+        if need - scopes:
+            lines.append(f"!! missing {', '.join(sorted(need - scopes))}: tick them when generating the user token")
+        return "\n             ".join(lines)
 
     def ig():
         tok = env("INSTAGRAM_TOKEN")
