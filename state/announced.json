@@ -170,10 +170,7 @@
   },
   "Sablednah/CityWorld-ReForged@v7.2.0": {
    "bluesky": "https://bsky.app/profile/sablednah.bsky.social/post/3n2mkimdq2r2a",
-   "facebook": {
-    "error": "POST https://graph.facebook.com/v23.0/662163423848348/feed -> HTTP 403: {\"error\":{\"message\":\"(#200) If posting to a group, requires app being installed in the group, and \\\\\\n          either publish_to_groups permission with user token, or both pages_read_engagement \\\\\\n          and pages_manage_po",
-    "failed": 1
-   },
+   "facebook": "https://www.facebook.com/662163423848348_1666629348581848",
    "instagram": "instagram media 18113410037612104",
    "mastodon": "https://dice.camp/@SableDnah/117639684875298347",
    "threads": "threads post 18000721904828308",
