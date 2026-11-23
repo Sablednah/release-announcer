@@ -1,0 +1,91 @@
+name: Post a note
+
+# A post that no release stands behind: a website change, a new page, an event. Run it by hand (Actions -> Post a
+# note -> Run workflow), or from a terminal:
+#
+#   gh workflow run say.yml -R Sablednah/release-announcer -f dry_run=false \
+#     -f text="The CrawlSpace pages are live" -f link=https://sablecraft.co.uk/legendquest-crawlspace/
+#
+# It goes to the Facebook Page unless `only` says otherwise. The same text and link twice posts once.
+
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: 'What to say (the link and hashtags are added after it)'
+        required: true
+      link:
+        description: 'Where it points'
+        default: 'https://sablecraft.co.uk'
+      only:
+        description: 'Networks, comma-separated (bluesky,mastodon,tumblr,facebook,instagram,threads), or all'
+        default: 'facebook'
+      hashtags:
+        description: 'Hashtags, comma-separated, without the #'
+        required: false
+      image:
+        description: 'A JPEG: a URL, or a file in this repo (Instagram needs one; Bluesky and Tumblr show it)'
+        default: 'images/sablecraft.jpg'
+      title:
+        description: 'Title of the link card on Bluesky and Tumblr'
+        default: 'SableCraft'
+      dry_run:
+        description: 'Only print the posts'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write     # state/announced.json
+
+concurrency:
+  group: announce     # shared with Announce releases: both commit the state file
+  cancel-in-progress: false
+
+jobs:
+  say:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Post
+        env:
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          MASTODON_INSTANCE: ${{ vars.MASTODON_INSTANCE }}
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          TUMBLR_BLOG: ${{ vars.TUMBLR_BLOG }}
+          TUMBLR_CONSUMER_KEY: ${{ secrets.TUMBLR_CONSUMER_KEY }}
+          TUMBLR_CONSUMER_SECRET: ${{ secrets.TUMBLR_CONSUMER_SECRET }}
+          TUMBLR_TOKEN: ${{ secrets.TUMBLR_TOKEN }}
+          TUMBLR_TOKEN_SECRET: ${{ secrets.TUMBLR_TOKEN_SECRET }}
+          FACEBOOK_PAGE_ID: ${{ vars.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+          INSTAGRAM_USER_ID: ${{ vars.INSTAGRAM_USER_ID }}
+          INSTAGRAM_TOKEN: ${{ secrets.INSTAGRAM_TOKEN }}
+          THREADS_USER_ID: ${{ vars.THREADS_USER_ID }}
+          THREADS_TOKEN: ${{ secrets.THREADS_TOKEN }}
+          META_GRAPH_VERSION: ${{ vars.META_GRAPH_VERSION }}
+          DRY: ${{ inputs.dry_run }}
+          TEXT: ${{ inputs.text }}
+          LINK: ${{ inputs.link }}
+          ONLY: ${{ inputs.only }}
+          TAGS: ${{ inputs.hashtags }}
+          IMAGE: ${{ inputs.image }}
+          TITLE: ${{ inputs.title }}
+        run: |
+          args=()
+          [ "$DRY" = true ] && args+=(--dry-run)
+          [ -n "$LINK" ] && args+=(--link "$LINK")
+          [ -n "$ONLY" ] && args+=(--only "$ONLY")
+          [ -n "$TAGS" ] && args+=(--tags "$TAGS")
+          [ -n "$IMAGE" ] && args+=(--image "$IMAGE")
+          [ -n "$TITLE" ] && args+=(--title "$TITLE")
+          python3 -I announce.py say "$TEXT" "${args[@]}"
+
+      - name: Save what was posted
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state
+          git diff --cached --quiet || { git commit -q -m "Posted a note"; git push -q; }

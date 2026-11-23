@@ -38,7 +38,32 @@ In the release notes, an HTML comment (invisible on GitHub):
 - `<!-- announce: Trains in the subway! CityWorld 7.2.0 is out -->` replaces the headline.
 - `<!-- announce: skip -->` keeps the release quiet.
 
+## Posting something that is not a release
+
+**Post a note** is for news with no release behind it, such as a significant change to the website. It goes to the
+Facebook Page unless told otherwise:
+
+```bash
+gh workflow run say.yml -R Sablednah/release-announcer -f dry_run=false \
+  -f text="The CrawlSpace pages are live: dungeon cutaways and the mobile game" \
+  -f link=https://sablecraft.co.uk/legendquest-crawlspace/
+```
+
+- `only`: `facebook` by default; a list of networks, or `all`.
+- `hashtags`, `image` (default `images/sablecraft.jpg`) and `title` are optional.
+- Leave `dry_run` out to see every network's post without sending anything.
+
+A note is remembered by its text and link (under `notes` in `state/announced.json`, with where it was posted), so
+the same one twice posts once.
+
+## The Facebook Page's picture and cover
+
+**Update the Facebook Page** sets the Page's profile picture and cover photo from `images/page/profile.png` and
+`images/page/cover.png`, then reads both back from the Page. It uses the Page token the posts already use. A dry run
+(the default) only shows what the Page has now. [images/page/README.md](images/page/README.md) says how the two
+pictures are made.
+
 ## Running it locally
 
-`python3 announce.py post Sablednah/CityWorld-ReForged v7.2.0 --dry-run` prints every network's post. No
-dependencies beyond Python 3.
+`python3 announce.py post Sablednah/CityWorld-ReForged v7.2.0 --dry-run` prints every network's post, and
+`python3 announce.py say "..." --dry-run` a note's. No dependencies beyond Python 3.

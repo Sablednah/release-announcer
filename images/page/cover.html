@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- The Facebook Page's cover, in the site's own look: steel-900, the hero's dot grid and cobalt bar, the header
+     wordmark and the homepage headline. 1640x924 (16:9, what a phone shows whole); a desktop shows only the middle
+     ~600px band, so everything that matters sits inside the corner marks. See README.md beside this file. -->
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Space+Grotesk:wght@700&display=block" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1640px; height: 924px; overflow: hidden; background: #060C16; }
+  .grid  { position: absolute; inset: 0; background: radial-gradient(circle, #243349 1.6px, transparent 1.6px) 0 0 / 36px 36px; }
+  .fade  { position: absolute; inset: 0; background: radial-gradient(ellipse 58% 62% at 50% 50%, rgba(6,12,22,.85) 0%, rgba(6,12,22,.4) 55%, rgba(6,12,22,0) 100%); }
+  .bar   { position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: linear-gradient(#0047AB, rgba(0,71,171,.2), transparent); }
+  .reg   { position: absolute; width: 26px; height: 26px; border: 0 solid #0047AB; }
+  .tl { top: 178px; left: 60px;  border-top-width: 3px; border-left-width: 3px; }
+  .tr { top: 178px; right: 60px; border-top-width: 3px; border-right-width: 3px; }
+  .bl { bottom: 178px; left: 60px;  border-bottom-width: 3px; border-left-width: 3px; }
+  .br { bottom: 178px; right: 60px; border-bottom-width: 3px; border-right-width: 3px; }
+  .col   { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .label { font: 500 25px 'JetBrains Mono', monospace; letter-spacing: .14em; text-transform: uppercase; color: #1E6FD9; }
+  .word  { font: 600 132px 'JetBrains Mono', monospace; letter-spacing: -3px; color: #E2E8F0; display: flex; align-items: center; margin-top: 26px; }
+  .word b { color: #0047AB; font-weight: 600; }
+  .caret { width: 50px; height: 132px; margin-left: 14px; border-radius: 5px; background: #0047AB; }
+  .rule  { width: 96px; height: 3px; background: #0047AB; margin: 34px 0 30px; }
+  .head  { font: 700 58px 'Space Grotesk', sans-serif; letter-spacing: -.5px; color: #E2E8F0; }
+  .head span { color: #1E6FD9; }
+</style>
+<div class="grid"></div><div class="fade"></div><div class="bar"></div>
+<div class="reg tl"></div><div class="reg tr"></div><div class="reg bl"></div><div class="reg br"></div>
+<div class="col">
+  <div class="label">IT Consultant · Web Developer · Plugin Author</div>
+  <div class="word"><b>~/</b>sablecraft<i class="caret"></i></div>
+  <div class="rule"></div>
+  <div class="head">Fixer of Tech. <span>Bringer of Code.</span></div>
+</div>

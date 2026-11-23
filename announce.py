@@ -9,6 +9,10 @@ credentials. Standard library only, so it runs on any GitHub runner with no inst
     announce.py post REPO TAG [--dry-run] [--only bluesky,mastodon] [--text "..."]   announce one release now
     announce.py seed                                     mark every existing release as announced
     announce.py verify                                   log in to every network and report; posts nothing
+    announce.py say "TEXT" [--link URL] [--title T] [--image URL|FILE] [--tags A,B] [--only facebook] [--dry-run]
+                                                         post a note that is not a release (a website change, say)
+    announce.py page [--picture URL|FILE] [--cover URL|FILE] [--dry-run]
+                                                         set the Facebook Page's profile picture and cover
     announce.py refresh OUTFILE                          refresh the 60-day Threads/Instagram tokens into OUTFILE
 
 Networks: Bluesky, Mastodon, Tumblr, Facebook Page, Instagram, Threads. (X charges per post, so it is left out.) A network without credentials is
@@ -463,6 +467,98 @@ def cmd_post(repo, tag, dry, only, text):
                 json.dump([kofi_issue(post, rec)], f)
 
 
+def asset_url(v):
+    """A URL as given; a file in this repo as its raw URL at the commit being run, which no cache can have stale."""
+    if not v or v.startswith("http"):
+        return v
+    if not os.path.isfile(os.path.join(HERE, v)):
+        sys.exit(f"!! no such file in this repo: {v}")
+    repo, sha = env("GITHUB_REPOSITORY", "Sablednah/release-announcer"), env("GITHUB_SHA", "main")
+    return f"https://raw.githubusercontent.com/{repo}/{sha}/{urllib.parse.quote(v)}"
+
+
+def cmd_say(text, link, title, image, tags, dry, only):
+    """Post a note that no release stands behind: a website change, a new page, an event.
+
+    The note is remembered by its text and link, so running the same one twice posts it once, and a network that
+    failed the first time gets another go."""
+    text = text.strip()
+    if not text:
+        sys.exit("!! nothing to say: the text is empty")
+    key = hashlib.sha1(f"{text}\n{link}".encode()).hexdigest()[:12]
+    post = {"repo": "note", "tag": key, "title": title or text, "headline": text, "link": link, "release_url": link,
+            "hashtags": tags, "image": asset_url(image), "networks": NETWORKS}
+    st = load_state()
+    rec = st.setdefault("notes", {}).get(key, {})
+    for k in [k for k, v in rec.items() if k in NETWORKS
+              and (isinstance(v, dict) or (isinstance(v, str) and v.startswith(("skipped", "gave up"))))]:
+        del rec[k]
+    announce(post, rec, dry, only)
+    if not dry:
+        rec.setdefault("when", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+        rec.update({"text": text, "link": link})
+        st["notes"][key] = rec
+        save_state(st)
+        if any(isinstance(rec.get(n), dict) for n in NETWORKS):
+            sys.exit(1)                              # something failed: the run should say so, not look green
+
+
+def cmd_page(picture, cover, dry):
+    """Set the Facebook Page's profile picture and/or cover photo, then read both back from the Page.
+
+    Needs nothing beyond the Page token the posts already use (Meta asks for pages_show_list and
+    pages_read_engagement for the picture, business_management for the cover). The old pictures are not deleted:
+    Facebook keeps them in the Page's Profile pictures and Cover photos albums."""
+    page, token = env("FACEBOOK_PAGE_ID"), env("FACEBOOK_PAGE_TOKEN")
+    picture, cover = asset_url(picture), asset_url(cover)
+    print(f"picture: {picture or '(leave alone)'}\ncover:   {cover or '(leave alone)'}")
+    if not (page and token):
+        if dry:
+            print("(no credentials here: nothing read, nothing changed)")
+            return
+        sys.exit("!! FACEBOOK_PAGE_ID and FACEBOOK_PAGE_TOKEN are not set")
+
+    def read(when):
+        r = http("GET", f"{GRAPH()}/{page}?fields=name,cover,picture.width(720).height(720)&access_token={token}")
+        pic, cov = (r.get("picture") or {}).get("data", {}), r.get("cover") or {}
+        print(f"{when}: page '{r.get('name')}'\n  picture {pic.get('width')}x{pic.get('height')} {pic.get('url')}"
+              f"\n  cover   id {cov.get('cover_id') or cov.get('id') or 'none'} {cov.get('source', '')}")
+        return pic, cov
+
+    before_pic, _ = read("before")
+    if dry:
+        print("dry run: nothing changed")
+        return
+    bad = []
+    if picture:
+        try:
+            r = http("POST", f"{GRAPH()}/{page}/picture", form={"picture": picture, "access_token": token})
+            print(f"picture: Facebook answered {r}")
+        except HttpError as e:
+            bad.append(f"picture: {e}")
+    photo = None
+    if cover:
+        try:
+            # a cover is a photo the Page already holds: upload it quietly, then point the cover at it
+            photo = http("POST", f"{GRAPH()}/{page}/photos",
+                         form={"url": cover, "no_story": "true", "access_token": token})["id"]
+            r = http("POST", f"{GRAPH()}/{page}", form={"cover": photo, "no_feed_story": "true",
+                                                        "no_notification": "true", "access_token": token})
+            print(f"cover: photo {photo} uploaded, Facebook answered {r}")
+        except HttpError as e:
+            bad.append(f"cover: {e}")
+    after_pic, after_cov = read("after")
+    # a write is done when the Page says so, not when the POST returned
+    if picture and not bad and after_pic.get("url", "").split("?")[0] == before_pic.get("url", "").split("?")[0]:
+        bad.append("picture: accepted, but the Page still serves the old one (it can lag a minute: run a dry run to look again)")
+    if photo and str(after_cov.get("cover_id") or after_cov.get("id")) != str(photo):
+        bad.append(f"cover: photo {photo} was accepted, but the Page's cover is {after_cov.get('cover_id') or after_cov.get('id')}")
+    for b in bad:
+        print(f"!! {b}")
+    if bad:
+        sys.exit(1)
+
+
 def cmd_refresh(outfile):
     """Threads and Instagram long-lived tokens last 60 days; each refresh gives a fresh 60. Run monthly."""
     out, problems = {}, []
@@ -589,7 +685,14 @@ def main(argv):
         return ""
 
     only = [o.strip() for o in opt("--only").split(",") if o.strip()]
+    if "all" in only:
+        only = []
+    if unknown := [o for o in only if o not in NETWORKS]:
+        sys.exit(f"!! unknown network(s) {', '.join(unknown)}: choose from {', '.join(NETWORKS)}, or all")
     text = opt("--text")
+    link, title, image = opt("--link"), opt("--title"), opt("--image")
+    tags = [t.strip().lstrip("#") for t in opt("--tags").split(",") if t.strip()]
+    picture, cover = opt("--picture"), opt("--cover")
     if not args:
         sys.exit(__doc__)
     if args[0] == "check":
@@ -600,6 +703,10 @@ def main(argv):
         cmd_post(args[1], args[2], dry, only, text)
     elif args[0] == "verify":
         cmd_verify()
+    elif args[0] == "say" and len(args) == 2:
+        cmd_say(args[1], link or "https://sablecraft.co.uk", title, image, tags, dry, only)
+    elif args[0] == "page" and len(args) == 1:
+        cmd_page(picture, cover, dry)
     elif args[0] == "refresh" and len(args) == 2:
         cmd_refresh(args[1])
     else:

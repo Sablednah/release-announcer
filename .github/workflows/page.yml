@@ -1,0 +1,43 @@
+name: Update the Facebook Page
+
+# Sets the Page's profile picture and cover photo from images/page/, with the same Page token the posts use, then
+# reads both back from the Page. Replace the PNGs (images/page/README.md says how they are made), push, and run
+# this with dry run unticked. A dry run only shows what the Page has now.
+
+on:
+  workflow_dispatch:
+    inputs:
+      picture:
+        description: 'Profile picture: a URL or a file in this repo (empty = leave it alone)'
+        default: 'images/page/profile.png'
+      cover:
+        description: 'Cover photo: a URL or a file in this repo (empty = leave it alone)'
+        default: 'images/page/cover.png'
+      dry_run:
+        description: 'Only show what the Page has now'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update the Page
+        env:
+          FACEBOOK_PAGE_ID: ${{ vars.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+          META_GRAPH_VERSION: ${{ vars.META_GRAPH_VERSION }}
+          DRY: ${{ inputs.dry_run }}
+          PICTURE: ${{ inputs.picture }}
+          COVER: ${{ inputs.cover }}
+        run: |
+          args=()
+          [ "$DRY" = true ] && args+=(--dry-run)
+          [ -n "$PICTURE" ] && args+=(--picture "$PICTURE")
+          [ -n "$COVER" ] && args+=(--cover "$COVER")
+          python3 -I announce.py page "${args[@]}"
