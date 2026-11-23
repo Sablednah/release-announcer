@@ -59,8 +59,9 @@ the same one twice posts once.
 ## The Facebook Page's picture and cover
 
 **Update the Facebook Page** sets the Page's profile picture and cover photo from `images/page/profile.png` and
-`images/page/cover.png`, then reads both back from the Page. It uses the Page token the posts already use. A dry run
-(the default) only shows what the Page has now. [images/page/README.md](images/page/README.md) says how the two
+`images/page/cover.png`, then reads both back from the Page. The Page token needs `pages_manage_metadata` for this,
+on top of what posting needs ([SETUP.md](SETUP.md)); the run checks before it uploads anything. A dry run (the
+default) only shows what the Page has now. [images/page/README.md](images/page/README.md) says how the two
 pictures are made.
 
 ## Running it locally

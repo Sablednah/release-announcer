@@ -11,7 +11,7 @@ credentials. Standard library only, so it runs on any GitHub runner with no inst
     announce.py verify                                   log in to every network and report; posts nothing
     announce.py say "TEXT" [--link URL] [--title T] [--image URL|FILE] [--tags A,B] [--only facebook] [--dry-run]
                                                          post a note that is not a release (a website change, say)
-    announce.py page [--picture URL|FILE] [--cover URL|FILE] [--dry-run]
+    announce.py page [--picture URL|FILE] [--cover URL|FILE] [--remove-photo ID] [--dry-run]
                                                          set the Facebook Page's profile picture and cover
     announce.py refresh OUTFILE                          refresh the 60-day Threads/Instagram tokens into OUTFILE
 
@@ -503,12 +503,22 @@ def cmd_say(text, link, title, image, tags, dry, only):
             sys.exit(1)                              # something failed: the run should say so, not look green
 
 
-def cmd_page(picture, cover, dry):
+PAGE_EDIT_SCOPE = "pages_manage_metadata"      # what Facebook asks for to change a Page's picture or cover
+
+
+def page_token_scopes(token):
+    d = http("GET", f"{GRAPH()}/debug_token?input_token={token}&access_token={token}").get("data", {})
+    return set(d.get("scopes", []))
+
+
+def cmd_page(picture, cover, dry, remove=""):
     """Set the Facebook Page's profile picture and/or cover photo, then read both back from the Page.
 
-    Needs nothing beyond the Page token the posts already use (Meta asks for pages_show_list and
-    pages_read_engagement for the picture, business_management for the cover). The old pictures are not deleted:
-    Facebook keeps them in the Page's Profile pictures and Cover photos albums."""
+    The Page token needs pages_manage_metadata for this (SETUP.md), on top of what posting needs: Meta's reference
+    lists less, and the Graph API refuses without it. That is checked before anything is uploaded. The old pictures
+    are not deleted: Facebook keeps them in the Page's Profile pictures and Cover photos albums.
+
+    `remove` deletes one photo from the Page by id, for a photo a run uploaded and then could not use."""
     page, token = env("FACEBOOK_PAGE_ID"), env("FACEBOOK_PAGE_TOKEN")
     picture, cover = asset_url(picture), asset_url(cover)
     print(f"picture: {picture or '(leave alone)'}\ncover:   {cover or '(leave alone)'}")
@@ -525,10 +535,35 @@ def cmd_page(picture, cover, dry):
               f"\n  cover   id {cov.get('cover_id') or cov.get('id') or 'none'} {cov.get('source', '')}")
         return pic, cov
 
-    before_pic, _ = read("before")
+    def drop(photo):
+        http("DELETE", f"{GRAPH()}/{photo}?access_token={token}")
+        try:                                         # gone means the Page can no longer find it
+            left = http("GET", f"{GRAPH()}/{photo}?fields=id&access_token={token}")
+        except HttpError:
+            return True
+        return not left.get("id")
+
+    before_pic, before_cov = read("before")
+    can_edit = PAGE_EDIT_SCOPE in page_token_scopes(token)
+    print(f"token: {'has' if can_edit else 'does NOT have'} {PAGE_EDIT_SCOPE}")
+    if remove:
+        if str(before_cov.get("cover_id") or before_cov.get("id")) == str(remove):
+            sys.exit(f"!! photo {remove} is the Page's cover: not deleting it")
+        ph = http("GET", f"{GRAPH()}/{remove}?fields=id,created_time,link,album{{name}}&access_token={token}")
+        print(f"photo {remove}: made {ph.get('created_time')}, album '{(ph.get('album') or {}).get('name')}', {ph.get('link')}")
+        if dry:
+            print("dry run: not deleted")
+            return
+        if not drop(remove):
+            sys.exit(f"!! photo {remove} was not deleted: the Page still has it")
+        print(f"photo {remove}: deleted, and the Page no longer has it")
+        return
     if dry:
         print("dry run: nothing changed")
         return
+    if (picture or cover) and not can_edit:
+        sys.exit(f"!! nothing was changed: the Page token lacks {PAGE_EDIT_SCOPE}. Make a new Page token with it "
+                 "ticked (SETUP.md, Facebook Page) and save it as FACEBOOK_PAGE_TOKEN.")
     bad = []
     if picture:
         try:
@@ -547,14 +582,20 @@ def cmd_page(picture, cover, dry):
             print(f"cover: photo {photo} uploaded, Facebook answered {r}")
         except HttpError as e:
             bad.append(f"cover: {e}")
+            if photo:                                # uploaded but refused as the cover: do not leave it lying about
+                try:
+                    print(f"cover: photo {photo} {'removed again' if drop(photo) else 'is STILL on the Page'}")
+                except HttpError as e2:
+                    bad.append(f"cover: photo {photo} is still on the Page ({e2}); delete it with the remove input")
+                photo = None
     after_pic, after_cov = read("after")
     # a write is done when the Page says so, not when the POST returned
     if picture and not bad and after_pic.get("url", "").split("?")[0] == before_pic.get("url", "").split("?")[0]:
         bad.append("picture: accepted, but the Page still serves the old one (it can lag a minute: run a dry run to look again)")
     if photo and str(after_cov.get("cover_id") or after_cov.get("id")) != str(photo):
         bad.append(f"cover: photo {photo} was accepted, but the Page's cover is {after_cov.get('cover_id') or after_cov.get('id')}")
-    for b in bad:
-        print(f"!! {b}")
+    for m in bad:
+        print(f"!! {m}")
     if bad:
         sys.exit(1)
 
@@ -640,6 +681,8 @@ def cmd_verify():
             lines.append("!! this is not a Page token: take the Page's access_token from me/accounts")
         if need - scopes:
             lines.append(f"!! missing {', '.join(sorted(need - scopes))}: tick them when generating the user token")
+        if PAGE_EDIT_SCOPE not in scopes:
+            lines.append(f"(no {PAGE_EDIT_SCOPE}: posting works, Update the Facebook Page will not)")
         return "\n             ".join(lines)
 
     def ig():
@@ -692,7 +735,7 @@ def main(argv):
     text = opt("--text")
     link, title, image = opt("--link"), opt("--title"), opt("--image")
     tags = [t.strip().lstrip("#") for t in opt("--tags").split(",") if t.strip()]
-    picture, cover = opt("--picture"), opt("--cover")
+    picture, cover, remove = opt("--picture"), opt("--cover"), opt("--remove-photo")
     if not args:
         sys.exit(__doc__)
     if args[0] == "check":
@@ -706,7 +749,7 @@ def main(argv):
     elif args[0] == "say" and len(args) == 2:
         cmd_say(args[1], link or "https://sablecraft.co.uk", title, image, tags, dry, only)
     elif args[0] == "page" and len(args) == 1:
-        cmd_page(picture, cover, dry)
+        cmd_page(picture, cover, dry, remove)
     elif args[0] == "refresh" and len(args) == 2:
         cmd_refresh(args[1])
     else:

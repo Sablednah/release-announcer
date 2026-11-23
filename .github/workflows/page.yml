@@ -1,7 +1,7 @@
 name: Update the Facebook Page
 
-# Sets the Page's profile picture and cover photo from images/page/, with the same Page token the posts use, then
-# reads both back from the Page. Replace the PNGs (images/page/README.md says how they are made), push, and run
+# Sets the Page's profile picture and cover photo from images/page/, then reads both back from the Page. The Page
+# token needs pages_manage_metadata for this, on top of what posting needs (SETUP.md); it is checked first. Replace the PNGs (images/page/README.md says how they are made), push, and run
 # this with dry run unticked. A dry run only shows what the Page has now.
 
 on:
@@ -13,6 +13,9 @@ on:
       cover:
         description: 'Cover photo: a URL or a file in this repo (empty = leave it alone)'
         default: 'images/page/cover.png'
+      remove_photo:
+        description: 'Instead: delete one photo from the Page by its id (one a failed run left behind)'
+        required: false
       dry_run:
         description: 'Only show what the Page has now'
         type: boolean
@@ -35,9 +38,11 @@ jobs:
           DRY: ${{ inputs.dry_run }}
           PICTURE: ${{ inputs.picture }}
           COVER: ${{ inputs.cover }}
+          REMOVE: ${{ inputs.remove_photo }}
         run: |
           args=()
           [ "$DRY" = true ] && args+=(--dry-run)
           [ -n "$PICTURE" ] && args+=(--picture "$PICTURE")
           [ -n "$COVER" ] && args+=(--cover "$COVER")
+          [ -n "$REMOVE" ] && args+=(--remove-photo "$REMOVE")
           python3 -I announce.py page "${args[@]}"

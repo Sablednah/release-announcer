@@ -39,12 +39,17 @@ can stay in development mode: it only ever posts to your own accounts, which hav
 ### Facebook Page
 
 1. Use case: **Manage everything on your Page**.
-2. **Graph API Explorer**: pick your app, *Get User Access Token* with `pages_show_list`, `pages_read_engagement` and
-   `pages_manage_posts`.
+2. **Graph API Explorer**: pick your app, *Get User Access Token* with `pages_show_list`, `pages_read_engagement`,
+   `pages_manage_posts` and `pages_manage_metadata`. (The last is only for **Update the Facebook Page**, which sets
+   the Page's profile picture and cover; posting works without it. Meta's reference does not list it for either,
+   and the Graph API refuses both without it: "(#283) Requires pages_manage_metadata permission".)
 3. **Access Token Debugger**: paste it, *Extend Access Token* (that one lasts 60 days).
 4. Back in the Explorer, with the extended token, run `me/accounts`. Your Page's `access_token` there **never
    expires** (check it in the debugger: "Expires: Never"), and its `id` is the Page ID.
 5. Variable `FACEBOOK_PAGE_ID`; secret `FACEBOOK_PAGE_TOKEN`.
+
+A permission ticked later is not added to a token made earlier: make a new user token with it, then repeat steps
+3 to 5. The *verify* run lists the token's scopes, and says so when `pages_manage_metadata` is missing.
 
 ### Instagram
 
